@@ -151,6 +151,13 @@ set tags=/data/projects/realty.ngs.ru/php.tags
 "------ Paste mode  ------
 set pastetoggle=<F2>
 
+map <F5> :! /usr/local/bin/ctags  -f /data/projects/realty.ngs.ru/php.tags -h '.php' 
+            \-R --exclude='\.git' --totals=yes --tag-relative=yes --PHP-kinds=+ivcf 
+            \--regex-PHP='/(abstract)?\s+class\s+([^ ]+)/\2/c/' 
+            \--regex-PHP='/(static\|abstract\|public\|protected\|private)\s+function\s+(\&\s+)?([^ (]+)/\3/f/' 
+            \--regex-PHP='/interface\s+([^ ]+)/\1/i/' 
+            \--regex-PHP='/\$([a-zA-Z_][a-zA-Z0-9_]*)/\1/v/''])'<CR>
+
 "------ Copy current file path to * buffe ------
 nmap <F4> :let @* = expand("%")<CR>
 
@@ -169,7 +176,7 @@ let g:ycm_autoclose_preview_window_after_completion = 1
 
 set omnifunc=phpcomplete#CompletePHP
 
-autocmd FileType php,java,ruby,c,cpp,perl,python  
+autocmd FileType php,java,ruby,c,cpp,perl,python
     \if &completefunc != '' | let &omnifunc=&completefunc | endif
 
 "------ Last file position  ------
