@@ -174,10 +174,6 @@ let g:ycm_add_preview_to_completeopt = 0
 
 let g:ycm_autoclose_preview_window_after_completion = 1
 
-set omnifunc=phpcomplete#CompletePHP
-
-autocmd FileType php,java,ruby,c,cpp,perl,python
-    \if &completefunc != '' | let &omnifunc=&completefunc | endif
 
 "------ Last file position  ------
 augroup vimrcEx
@@ -205,7 +201,7 @@ let g:syntastic_auto_loc_list = 1
 let g:syntastic_php_checkers = ['php', 'phpcs', 'phpmd']
 let g:syntastic_php_phpmd_exec = '~/phpmd/src/bin/phpmd'
 let g:syntastic_phpmd_rules = "codesize,design,unusedcode"
-let g:syntastic_php_phpcs_args="--encoding=utf-8 --report=csv --standard=NGS"
+let g:syntastic_php_phpcs_args="--encoding=utf-8 --report=csv --standard=/data/standards/CodeSniffer/Standards/NGS/ruleset.xml"
 
 "------  Plugin: Tagbar  ------
 Plug 'majutsushi/tagbar'
@@ -290,6 +286,7 @@ Plug 'pangloss/vim-javascript', { 'for': 'js' }
 Plug 'vim-scripts/nginx.vim'
 
 "------  Plugin: php documentation  ------
+"Press: Shift + k
 Plug 'alvan/vim-php-manual', { 'for': 'php' }
 
 "------  Plugin:  smarty syntax  ------
@@ -302,7 +299,34 @@ Plug 'vim-scripts/smarty-syntax', { 'for': 'smarty' }
         au FileType smarty hi htmlLink cterm=none
     augroup end
 
+set omnifunc=phpcomplete#CompletePHP
+
+autocmd FileType php,java,ruby,c,cpp,perl,python
+    \ if &completefunc != '' | let &omnifunc=&completefunc | endif
+
+"------  Plugin:  PHP Correct Indenting  ------
+Plug 'PHP-correct-Indenting', { 'for': 'php' }
+
+"------  Plugin:  Ultisnips  ------
+Plug 'SirVer/ultisnips'
+    let g:UltiSnipsSnippetDirectories = [$HOME.'/.vim/UltiSnips']
+    let g:UltiSnipsEnableSnipMate = 0
+    let g:UltiSnipsEditSplit = "horizontal"
+
+    map <Leader>` :UltiSnipsEdit<CR>G
+    vmap <Leader>` y:UltiSnipsEdit<CR>Go<CR>snippet HERE<CR>endsnippet<ESC>k]p?HERE<CR>zzciw
+
+"------  Plugin:  Gundo  ------
+Plug 'sjl/gundo.vim'
+nmap <F7> :GundoToggle<CR>
+
+Plug 'fatih/vim-go', { 'for': 'go' }
+    let g:go_fmt_fail_silently = 0
+    let g:go_fmt_command = "goimports"
+    let g:go_fmt_autosave = 1
+    let g:go_bin_path = $GOPATH . "/bin"
 call plug#end()
+
 
 call unite#custom#source(
 \ 'file,file/new,buffer,file_rec,file_rec/async, git_cached, git_untracked, directory',
@@ -311,3 +335,36 @@ call unite#custom#source(
 
 call unite#filters#matcher_default#use(['matcher_fuzzy'])
 call unite#filters#sorter_default#use(['sorter_reverse'])
+nmap <C-f> :Ag <c-r>=expand("<cword>")<cr><cr>
+nmap <C-n> :Unite -buffer-name=files -start-insert buffer file file_rec/async<cr>
+nnoremap <space>/ :Ag
+
+let g:unite_source_menu_menus = {}
+                let g:unite_source_menu_menus.search = {
+                      \     'description' : 'Search Operations',
+                      \ }
+                let g:unite_source_menu_menus.search.candidates = {
+                      \   'Search in project'      : 'Unite grep:.',
+                      \   'Search in current file'      : 'Unite grep:%',
+                      \   'Git modified'      : 'Unite -buffer-name=files -start-insert git_modified',
+                      \   'Git untracked'      : 'Unite -buffer-name=files -start-insert git_untracked',
+                      \ }
+                function g:unite_source_menu_menus.search.map(key, value)
+                  return {
+                      \       'word' : a:key, 'kind' : 'command',
+                      \       'action__command' : a:value,
+                      \     }
+                endfunction
+
+nnoremap <Leader>m :Unite menu:search<CR>
+vnoremap <Leader>m :Unite menu:search<CR>
+
+nnoremap <Leader>r :UniteResume<CR>
+vnoremap <Leader>r :UniteResume<CR>
+
+nnoremap <Leader>fn :UniteNext<CR>
+vnoremap <Leader>fn :UniteNext<CR>
+
+nnoremap <Leader>fp :UnitePrevious<CR>
+vnoremap <Leader>fp :UnitePrevious<CR>
+
