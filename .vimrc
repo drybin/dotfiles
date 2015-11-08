@@ -320,6 +320,10 @@ Plug 'SirVer/ultisnips'
 Plug 'sjl/gundo.vim'
 nmap <F7> :GundoToggle<CR>
 
+
+"------  Plugin:  Gundo  ------
+Plug 'klen/python-mode'
+
 Plug 'fatih/vim-go', { 'for': 'go' }
     let g:go_fmt_fail_silently = 0
     let g:go_fmt_command = "goimports"
@@ -327,6 +331,7 @@ Plug 'fatih/vim-go', { 'for': 'go' }
     let g:go_bin_path = $GOPATH . "/bin"
 call plug#end()
 
+set ttymouse=xterm2
 
 call unite#custom#source(
 \ 'file,file/new,buffer,file_rec,file_rec/async, git_cached, git_untracked, directory',
