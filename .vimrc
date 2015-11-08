@@ -216,7 +216,18 @@ Plug 'scrooloose/nerdtree'
 autocmd FileType nerdtree nnoremap <buffer> <Leader>a :call GetSelected()<cr>
 map <C-n> :NERDTreeToggle<CR>
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
-nmap <F3> :NERDTreeToggle<CR>
+
+" Open NERDTree in the directory of the current file (or /home if no file is open)
+nmap <silent> <F3> :call NERDTreeToggleInCurDir()<cr>
+"nmap <F3> :NERDTreeToggle<CR>
+function! NERDTreeToggleInCurDir()
+  " If NERDTree is open in the current buffer
+  if (exists("t:NERDTreeBufName") && bufwinnr(t:NERDTreeBufName) != -1)
+    exe ":NERDTreeClose"
+  else
+    exe ":NERDTreeFind"
+  endif
+endfunction
 
 function! GetSelected()
     let current_file = g:NERDTreeFileNode.GetSelected()
