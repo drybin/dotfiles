@@ -144,19 +144,23 @@ let g:phpcomplete_add_class_extensions = ['date_time', 'curl', 'memcache', 'memc
 let g:phpcomplete_add_function_extensions = ['date_time', 'curl', 'posix_regex', 'exif', 'iconv', 'mysql']
 let g:phpcomplete_active_constant_extensions = ['date_time', 'curl', 'exif', 'mysql', 'pcre', 'memcache', 'mysql_pdo']
 
-
 "------ Tags  ------
 set tags=/data/projects/realty.ngs.ru/php.tags
+autocmd FileType python set tags=/root/python.tags
+
 
 "------ Paste mode  ------
 set pastetoggle=<F2>
 
-map <F5> :! /usr/local/bin/ctags  -f /data/projects/realty.ngs.ru/php.tags -h '.php' 
+autocmd FileType php map <F5> :! /usr/local/bin/ctags  -f /data/projects/realty.ngs.ru/php.tags -h '.php' 
             \-R --exclude='\.git' --totals=yes --tag-relative=yes --PHP-kinds=+ivcf 
             \--regex-PHP='/(abstract)?\s+class\s+([^ ]+)/\2/c/' 
             \--regex-PHP='/(static\|abstract\|public\|protected\|private)\s+function\s+(\&\s+)?([^ (]+)/\3/f/' 
             \--regex-PHP='/interface\s+([^ ]+)/\1/i/' 
             \--regex-PHP='/\$([a-zA-Z_][a-zA-Z0-9_]*)/\1/v/''])'<CR>
+
+autocmd FileType python map <F5> :! ctags  -f /root/python.tags -h '.py' 
+            \-R --exclude='\.git' --totals=yes --tag-relative=yes --PHP-kinds=+ivcf <CR>
 
 "------ Copy current file path to * buffe ------
 nmap <F4> :let @* = expand("%")<CR>
@@ -384,3 +388,27 @@ vnoremap <Leader>fn :UniteNext<CR>
 nnoremap <Leader>fp :UnitePrevious<CR>
 vnoremap <Leader>fp :UnitePrevious<CR>
 
+function! ShowFunc(sort)
+let gf_s = &grepformat
+let gp_s = &grepprg
+if ( &filetype == "c" || &filetype == "php" || &filetype == "python" ||
+  \ &filetype == "sh" )
+  let &grepformat='%*\k%*\sfunction%*\s%l%*\s%f %m'
+  let &grepprg = 'ctags -x --'.&filetype.'-types=f --sort='.a:sort
+elseif ( &filetype == "perl" )
+  let &grepformat='%*\k%*\ssubroutine%*\s%l%*\s%f %m'
+  let &grepprg = 'ctags -x --perl-types=s --sort='.a:sort
+elseif ( &filetype == "vim" )
+  let &grepformat='%*\k%*\sfunction%*\s%l%*\s%f %m'
+  let &grepprg = 'ctags -x --vim-types=f --language-force=vim --sort='.a:sort
+endif
+if (&readonly == 0) | update | endif
+silent! grep %
+cwindow 10
+redraw
+let &grepformat = gf_s
+let &grepprg = gp_s
+endfunc
+
+noremap <F6> <Esc>:call ShowFunc("no")<CR><Esc>
+noremap <S-F6> <Esc>:call ShowFunc("yes")<CR><Esc>
